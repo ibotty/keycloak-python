@@ -1,3 +1,4 @@
+import codecs
 import json
 import logging
 from urllib.request import urlopen, Request
@@ -17,7 +18,7 @@ class Client(object):
         http -f --auth=user:pass https://auth.morrmusic.com/auth/realms/morrmusic_internal/protocol/openid-connect/token grant_type=client_credentials
         """
         data = {'grant_type': 'client_credentials'}
-        return self.token_flow(data)
+        return self.token_flow(data, auth_basic=True)
 
     def token_flow(self, data,
                    auth_basic=None,
@@ -26,13 +27,17 @@ class Client(object):
             'url': url or self.config.realm_url + path,
             }
 
-        if not isinstance(data, str):
-            data = urlencode(data)
+        if not isinstance(data, bytes):
+            if not isinstance(data, str):
+                data = urlencode(data)
+            data = data.encode()
+
         if 'headers' not in opts:
-            opts['headers'] = []
+            opts['headers'] = {}
 
         if 'Content-Type' not in opts['headers']:
-            opts['headers']['Content-Type'] = 'application/x-www-urlencoded'
+            opts['headers']['Content-Type'] = 'application/x-www-form-urlencoded'
+
         if 'X-Client' not in opts['headers']:
             opts['headers']['X-Client'] = 'keycloak-python'
 
@@ -48,7 +53,8 @@ class Client(object):
                 # assume it's "user:pass"
                 auth_str = auth_basic
 
-            encoded_auth_str = auth_str.encode('base64')
+            # codecs.encode does only work with bytes, is using utf8 encoded string right?
+            encoded_auth_str = codecs.encode(auth_str.encode(), 'base64').decode('ascii').rstrip('\n')
             opts['headers']['Authorization'] = 'Basic ' + encoded_auth_str
 
-        return json.loads(urlopen(Request(**opts)).read().decode('unicode'))
+        return json.loads(urlopen(Request(**opts), data).read().decode())
