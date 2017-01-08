@@ -106,7 +106,7 @@ class Keycloak(object):
                 logging.info('No resource_access.%s in token', app)
                 return False
         else:
-            logging.warn('grant_has_role: role has more than two parts separated by ":".')
+            logging.warning('grant_has_role: role has more than two parts separated by ":".')
 
             return False
 

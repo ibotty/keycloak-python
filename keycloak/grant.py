@@ -5,11 +5,7 @@ import logging
 
 
 class Grant(object):
-    def __init__(self,
-                 access_token=None,
-                 refresh_token=None,
-                 id_token=None,
-                 raw=None):
+    def __init__(self, access_token=None, refresh_token=None, id_token=None, raw=None):
         self.access_token = access_token
         self.refresh_token = refresh_token
         self.id_token = id_token
@@ -28,10 +24,11 @@ class Grant(object):
                     val = grant[key]
                 else:
                     val = getattr(grant, key)
+
                 if val:
                     setattr(self, key, val)
                 else:
-                    logging.error('not setting attribute to null: %s', key)
+                    logging.error('not setting attribute to None: %s', key)
             except KeyError:
                 pass
             except AttributeError:
