@@ -18,7 +18,7 @@ class Grant(object):
         logging.error('grant__init__: %s', self.__dict__)
 
     @classmethod
-    def from_rawgrant(cls, grant):
+    def from_raw_grant(cls, grant):
         return cls().update(grant)
 
     def update(self, grant):

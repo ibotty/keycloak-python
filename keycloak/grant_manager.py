@@ -45,7 +45,7 @@ class GrantManager(object):
             'password': password,
             'grant_type': 'password'
             }
-        return Grant.from_rawgrant(self.post_request(data))
+        return Grant.from_raw_grant(self.post_request(data))
 
     def obtain_from_code(self, redirect_url, code, session_id, session_host):
         data = {
@@ -56,7 +56,7 @@ class GrantManager(object):
             'client_id': self.client_id,
             'redirect_url': redirect_url,
             }
-        return Grant.from_rawgrant(self.post_request(data))
+        return Grant.from_raw_grant(self.post_request(data))
 
     def ensure_freshness(self, grant):
         if not self.is_expired(grant):
