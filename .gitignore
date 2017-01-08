@@ -1,0 +1,11 @@
+# IDE and env stuff
+.env
+.idea
+__pycache__/
+*.py[cod]
+
+# junk
+.DS_Store
+*~
+*.swp
+/keycloak_python.egg-info
