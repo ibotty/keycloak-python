@@ -11,6 +11,7 @@ class Client(object):
     def __init__(self, config=None):
         if not config:
             config = Config()
+
         self.config = config
 
     def client_credentials_flow(self):

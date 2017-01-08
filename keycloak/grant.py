@@ -14,6 +14,7 @@ class Grant(object):
         self.refresh_token = refresh_token
         self.id_token = id_token
         self.raw = raw
+
         logging.error('grant__init__: %s', self.__dict__)
 
     @classmethod
@@ -40,6 +41,7 @@ class Grant(object):
         wrap('refresh_token')
         wrap('id_token')
         wrap('expires_in')
+
         self.raw = grant
 
         return grant

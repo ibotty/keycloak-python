@@ -106,12 +106,14 @@ class GrantManager(object):
 
         grant = Grant(raw=raw_grant, **grant_data)
         grant = self.validate_grant(grant)
+
         return grant
 
     def validate_grant(self, grant):
         grant.access_token = self.validate_token(grant.access_token)
         grant.refresh_token = self.validate_token(grant.refresh_token)
         grant.id_token = self.validate_token(grant.id_token)
+
         return grant
 
     def validate_token(self, token):
@@ -130,26 +132,32 @@ class GrantManager(object):
                                       key=self.certs,
                                       audience=self.client_id)
             logging.debug('decoded token: %s', decoded)
+
             return decoded
         except jose.exceptions.JOSEError as e:
             logging.info('Discarding token: %s', e)
+
             return None
 
     def get_certs(self):
         certs_url = self.realm_url + '/protocol/openid-connect/certs'
         headers = {'X-Client': 'keycloak-python'}
+
         raw_data = urlopen(Request(url=certs_url, headers=headers)).read()
+
         self.certs = json.loads(raw_data.decode())
 
     def is_expired(self, grant):
         if not grant.access_token:
             logging.debug("grant's access token is not set")
+
             return True
 
         return not self.validate_token(grant.access_token)
 
     def login_url(self, uuid, redirect_uri):
         scopes_str = " ".join(["openid"] + self.scope)
+
         return ''.join([
             self.realm_url,
             '/protocol/openid-connect/auth',

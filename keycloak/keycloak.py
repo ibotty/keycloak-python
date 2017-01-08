@@ -27,11 +27,14 @@ class Keycloak(object):
 
         for store in self.stores:
             raw_token = store.get_token(request)
+
             if not raw_token:
                 logging.debug("no token in store %s", store)
+
                 continue
 
             grant_data = raw_token
+
             if isinstance(raw_token, str):
                 try:
                     grant_data = json.loads(raw_token)
@@ -40,7 +43,9 @@ class Keycloak(object):
 
             if hasattr(grant_data, 'error'):
                 logging.info('Discarding grant because of error %s', grant_data['error'])
+
                 grant_data = None
+
                 continue
 
             break
@@ -48,8 +53,10 @@ class Keycloak(object):
         if grant_data:
             grant = self.manager.create_grant(grant_data)
             grant = self.manager.ensure_freshness(grant)
+
             if grant:
                 self.store_grant(response, grant)
+
             return grant
 
     def store_grant(self, response, grant):
@@ -79,15 +86,18 @@ class Keycloak(object):
 
         decoded = self.manager.decode_token(grant.access_token)
         splitted = role.split(':')
+
         if len(splitted) == 1:
             try:
                 return role in decoded['realm_access']['roles']
             except KeyError:
                 logging.info('No realm_access.roles in token')
                 return False
+
         elif len(splitted) == 2:
             app = splitted[0]
             role = splitted[1]
+
             try:
                 return role in decoded['resource_access'][app]
             except KeyError:
@@ -95,6 +105,7 @@ class Keycloak(object):
                 return False
         else:
             logging.warn('grant_has_role: role has more than two parts separated by ":".')
+
             return False
 
     def protect(self, role, request, response):

@@ -11,6 +11,8 @@ class BearerStore(BaseStore):
 
     def get_token(self, request):
         header = self.http_api.get_header(request, 'Authorization')
+
         if header and header.startswith('Bearer '):
             access_token = header[7:]
+
             return {'access_token': access_token}

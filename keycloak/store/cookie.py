@@ -14,15 +14,18 @@ class CookieStore(BaseStore):
 
     def get_token(self, request):
         cookie = self.http_api.get_cookie(request, self.cookie_name)
+
         if cookie:
             try:
                 return json.loads(cookie)
             except json.JSONDecodeError:
                 pass
+
         return None
 
     def save_grant(self, token, response):
         raw_token = token
+
         if isinstance(token, Grant):
             raw_token = token.raw
 
