@@ -1,7 +1,3 @@
-"""
-Config
-"""
-
 import json
 import os
 
@@ -99,6 +95,7 @@ class Config(object):
         else:
             # find in parent directory
             upper_dir = os.path.dirname(path)
+
             if path != upper_dir:
                 return Config.find_file(upper_dir, filename)
             else:

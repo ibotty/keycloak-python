@@ -11,7 +11,7 @@ class Grant(object):
         self.id_token = id_token
         self.raw = raw
 
-        logging.error('grant__init__: %s', self.__dict__)
+        # logging.error('grant__init__: %s', self.__dict__)
 
     @classmethod
     def from_raw_grant(cls, grant):
@@ -28,7 +28,7 @@ class Grant(object):
                 if val:
                     setattr(self, key, val)
                 else:
-                    logging.error('not setting attribute to None: %s', key)
+                    raise Exception('not setting attribute to None: %s' % key)
             except KeyError:
                 pass
             except AttributeError:

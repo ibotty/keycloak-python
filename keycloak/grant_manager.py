@@ -9,30 +9,20 @@ from .grant import Grant
 
 
 class GrantManager(object):
-    def __init__(self,
-                 client_id,
-                 realm_url,
-                 secret=None,
-                 public=None,
-                 scope=None,
-                 not_before=None):
+    def __init__(self, client_id, realm_url, secret=None, public=None, scope=None, not_before=None):
         self.client_id = client_id
         self.realm_url = realm_url
         self.secret = secret
         self.public = public
         self.scope = scope
         self.not_before = not_before
-
-        self.get_certs()
+        self.certs = self.get_certs()
 
     @classmethod
     def from_config(cls, config):
         config_dict = {}
-        for field in ['client_id',
-                      'realm_url',
-                      'secret',
-                      'scope',
-                      'public']:
+
+        for field in ['client_id', 'realm_url', 'secret', 'scope', 'public']:
             if hasattr(config, field):
                 config_dict[field] = getattr(config, field)
 
@@ -44,7 +34,8 @@ class GrantManager(object):
             'username': username,
             'password': password,
             'grant_type': 'password'
-            }
+        }
+
         return Grant.from_raw_grant(self.post_request(data))
 
     def obtain_from_code(self, redirect_url, code, session_id, session_host):
@@ -55,7 +46,8 @@ class GrantManager(object):
             'grant_type': 'authorization_code',
             'client_id': self.client_id,
             'redirect_url': redirect_url,
-            }
+        }
+
         return Grant.from_raw_grant(self.post_request(data))
 
     def ensure_freshness(self, grant):
@@ -74,7 +66,7 @@ class GrantManager(object):
         data = {
             'grant_type': 'refresh_token',
             'refresh_token': grant.refresh_token
-            }
+        }
 
         return grant.update(self.post_request(data))
 
@@ -90,7 +82,7 @@ class GrantManager(object):
             'url': self.realm_url + path,
             'method': 'POST',
             'data': data
-            }
+        }
 
         if not self.public:
             auth_str = (self.client_id + ':' + self.secret).encode('base64')
@@ -120,7 +112,8 @@ class GrantManager(object):
         if self.decode_token(token):
             return token
         else:
-            logging.debug("token not valid: %s", token)
+            # logging.debug("token not valid: %s", token)
+
             return None
 
     def decode_token(self, token):
@@ -131,11 +124,11 @@ class GrantManager(object):
             decoded = jose.jwt.decode(token,
                                       key=self.certs,
                                       audience=self.client_id)
-            logging.debug('decoded token: %s', decoded)
+            # logging.debug('decoded token: %s', decoded)
 
             return decoded
         except jose.exceptions.JOSEError as e:
-            logging.info('Discarding token: %s', e)
+            # logging.info('Discarding token: %s', e)
 
             return None
 
@@ -145,11 +138,11 @@ class GrantManager(object):
 
         raw_data = urlopen(Request(url=certs_url, headers=headers)).read()
 
-        self.certs = json.loads(raw_data.decode())
+        return json.loads(raw_data.decode())
 
     def is_expired(self, grant):
         if not grant.access_token:
-            logging.debug("grant's access token is not set")
+            # logging.debug("grant's access token is not set")
 
             return True
 

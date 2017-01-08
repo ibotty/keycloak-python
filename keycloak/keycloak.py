@@ -29,7 +29,7 @@ class Keycloak(object):
             raw_token = store.get_token(request)
 
             if not raw_token:
-                logging.debug("no token in store %s", store)
+                # logging.debug("no token in store %s", store)
 
                 continue
 
@@ -44,7 +44,7 @@ class Keycloak(object):
                 grant_data = raw_token
 
             if hasattr(grant_data, 'error'):
-                logging.info('Discarding grant because of error %s', grant_data['error'])
+                # logging.info('Discarding grant because of error %s', grant_data['error'])
 
                 grant_data = None
 
@@ -93,7 +93,7 @@ class Keycloak(object):
             try:
                 return role in decoded['realm_access']['roles']
             except KeyError:
-                logging.info('No realm_access.roles in token')
+                # logging.info('No realm_access.roles in token')
                 return False
 
         elif len(splitted) == 2:
@@ -103,10 +103,10 @@ class Keycloak(object):
             try:
                 return role in decoded['resource_access'][app]
             except KeyError:
-                logging.info('No resource_access.%s in token', app)
+                # logging.info('No resource_access.%s in token', app)
                 return False
         else:
-            logging.warning('grant_has_role: role has more than two parts separated by ":".')
+            # logging.warning('grant_has_role: role has more than two parts separated by ":".')
 
             return False
 
