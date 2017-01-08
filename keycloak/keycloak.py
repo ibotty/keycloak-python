@@ -33,13 +33,15 @@ class Keycloak(object):
 
                 continue
 
-            grant_data = raw_token
+            grant_data = None
 
             if isinstance(raw_token, str):
                 try:
                     grant_data = json.loads(raw_token)
                 except json.JSONDecodeError:
                     grant_data = None
+            elif isinstance(raw_token, dict):
+                grant_data = raw_token
 
             if hasattr(grant_data, 'error'):
                 logging.info('Discarding grant because of error %s', grant_data['error'])
